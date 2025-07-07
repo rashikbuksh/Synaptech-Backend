@@ -14,6 +14,8 @@ import { job, job_entry, product, vendor } from '../schema';
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
+  console.log('Creating job entry with value:', value);
+
   const resultPromise = db.insert(job_entry).values(value).returning({
     name: job_entry.uuid,
   });
