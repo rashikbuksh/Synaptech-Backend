@@ -92,8 +92,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     job_entry: sql`
       (
         SELECT *
-        FROM job_entry
-        WHERE job_uuid = ${job.uuid}
+        FROM lib.job_entry
+        WHERE job_entry.job_uuid = ${job.uuid}
       ) AS job_entry
     `,
   })
