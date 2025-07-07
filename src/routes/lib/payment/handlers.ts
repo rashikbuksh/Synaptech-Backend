@@ -140,5 +140,5 @@ export const getPaymentByJobUuid: AppRouteHandler<GetPaymentByJobUuidRoute> = as
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data[0] || {}, HSCode.OK);
+  return c.json(data || [], HSCode.OK);
 };
