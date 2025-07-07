@@ -106,7 +106,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
         )
         FROM lib.job_entry
         WHERE job_entry.job_uuid = ${job.uuid}
-      ), '{}'::jsonb)`.as('job_entry'),
+      ), ARRAY[]::jsonb[])`.as('job_entry'),
   })
     .from(job)
     .leftJoin(users, eq(job.created_by, users.uuid))
