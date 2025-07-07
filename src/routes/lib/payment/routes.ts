@@ -71,7 +71,9 @@ export const getPaymentByJobUuid = createRoute({
   path: '/lib/job-payment/{job_uuid}',
   method: 'get',
   request: {
-    params: param.uuid,
+    params: z.object({
+      job_uuid: z.string(),
+    }),
   },
   tags,
   responses: {
