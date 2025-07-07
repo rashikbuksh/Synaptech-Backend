@@ -90,12 +90,23 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_at: job.created_at,
     updated_at: job.updated_at,
     job_entry: sql`
-      (
-        SELECT *
+      COALESCE(ARRAY(
+        SELECT jsonb_build_object(
+          'uuid', job_entry.uuid,
+          'job_uuid', job_entry.job_uuid,
+          'product_uuid', job_entry.product_uuid,
+          'vendor_uuid', job_entry.vendor_uuid,
+          'created_by', job_entry.created_by,
+          'created_at', job_entry.created_at,
+          'updated_at', job_entry.updated_at,
+          'quantity', job_entry.quantity,
+          'buying_unit_price', job_entry.buying_unit_price,
+          'selling_unit_price', job_entry.selling_unit_price,
+          'warranty_days', job_entry.warranty_days
+        )
         FROM lib.job_entry
         WHERE job_entry.job_uuid = ${job.uuid}
-      ) AS job_entry
-    `,
+      ), '{}'::jsonb)`.as('job_entry'),
   })
     .from(job)
     .leftJoin(users, eq(job.created_by, users.uuid))
