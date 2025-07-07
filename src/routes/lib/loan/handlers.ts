@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -93,6 +93,26 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_at: loan.created_at,
     updated_at: loan.updated_at,
     remarks: loan.remarks,
+    loan_paid: sql`
+          COALESCE(ARRAY(
+            SELECT jsonb_build_object(
+              'uuid', loan_paid.uuid,
+              'loan_uuid', loan_paid.loan_uuid,
+              'index', loan_paid.index,
+              'type', loan_paid.type,
+              'amount',loan_paid.amount::float8,
+              'created_by', loan_paid.created_by,
+              'created_by_name', users.name,
+              'created_at', loan_paid.created_at,
+              'updated_at', loan_paid.updated_at,
+              'remarks', loan_paid.remarks
+            )
+            FROM loan_paid
+            LEFT JOIN hr.users ON loan_paid.created_by = users.uuid
+            WHERE loan_paid.loan_uuid = ${loan.uuid}
+            ORDER BY loan_paid.index ASC
+          ),  ARRAY[]::jsonb[])`.as('loan_paid'),
+
   })
     .from(loan)
     .leftJoin(users, eq(loan.created_by, users.uuid))
