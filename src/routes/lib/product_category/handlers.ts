@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -68,7 +68,8 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: product_category.remarks,
   })
     .from(product_category)
-    .leftJoin(hrSchema.users, eq(product_category.created_by, hrSchema.users.uuid));
+    .leftJoin(hrSchema.users, eq(product_category.created_by, hrSchema.users.uuid))
+    .orderBy(desc(product_category.created_at));
 
   const data = await resultPromise;
 
@@ -81,11 +82,27 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.product_category.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  // const data = await db.query.product_category.findFirst({
+  //   where(fields, operators) {
+  //     return operators.eq(fields.uuid, uuid);
+  //   },
+  // });
+
+  const resultPromise = db.select({
+    uuid: product_category.uuid,
+    name: product_category.name,
+    short_name: product_category.short_name,
+    created_by: product_category.created_by,
+    created_by_name: hrSchema.users.name,
+    created_at: product_category.created_at,
+    updated_at: product_category.updated_at,
+    remarks: product_category.remarks,
+  })
+    .from(product_category)
+    .leftJoin(hrSchema.users, eq(product_category.created_by, hrSchema.users.uuid))
+    .where(eq(product_category.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);

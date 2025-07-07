@@ -1,9 +1,10 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -56,7 +57,26 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.payment.findMany();
+  const resultPromise = db.select({
+    uuid: payment.uuid,
+    index: payment.index,
+    job_uuid: payment.job_uuid,
+    paid_at: payment.paid_at,
+    method: payment.method,
+    amount: payment.amount,
+    created_by: payment.created_by,
+    created_by_name: hrSchema.users.name,
+    created_at: payment.created_at,
+    updated_at: payment.updated_at,
+  })
+    .from(payment)
+    .leftJoin(hrSchema.users, eq(hrSchema.users.uuid, payment.created_by))
+    .orderBy(desc(payment.created_at));
+
+  const data = await resultPromise;
+
+  if (!data)
+    return DataNotFound(c);
 
   return c.json(data || [], HSCode.OK);
 };
@@ -64,11 +84,29 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.payment.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  // const data = await db.query.payment.findFirst({
+  //   where(fields, operators) {
+  //     return operators.eq(fields.uuid, uuid);
+  //   },
+  // });
+
+  const resultPromise = db.select({
+    uuid: payment.uuid,
+    index: payment.index,
+    job_uuid: payment.job_uuid,
+    paid_at: payment.paid_at,
+    method: payment.method,
+    amount: payment.amount,
+    created_by: payment.created_by,
+    created_by_name: hrSchema.users.name,
+    created_at: payment.created_at,
+    updated_at: payment.updated_at,
+  })
+    .from(payment)
+    .leftJoin(hrSchema.users, eq(hrSchema.users.uuid, payment.created_by))
+    .where(eq(payment.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
