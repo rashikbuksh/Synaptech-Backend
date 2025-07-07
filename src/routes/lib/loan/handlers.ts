@@ -69,6 +69,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: loan.created_at,
     updated_at: loan.updated_at,
     remarks: loan.remarks,
+    total_amount: sql`
+          COALESCE(SELECT SUM(loan_paid.amount) FROM lib.loan_paid WHERE loan_paid.loan_uuid = ${loan.uuid}, 0)`.as('total_amount'),
+
   })
     .from(loan)
     .leftJoin(users, eq(loan.created_by, users.uuid))
