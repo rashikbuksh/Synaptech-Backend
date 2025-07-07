@@ -26,6 +26,7 @@ export const insertSchema = createInsertSchema(
     buying_unit_price: z.number().default(0).optional(),
     selling_unit_price: z.number().default(0).optional(),
     warranty_days: z.number().default(0).optional(),
+    is_serial_needed: z.boolean().default(false).optional(),
   },
 ).required({
   uuid: true,
@@ -40,6 +41,7 @@ export const insertSchema = createInsertSchema(
   selling_unit_price: true,
   warranty_days: true,
   purchased_at: true,
+  is_serial_needed: true,
   updated_at: true,
   remarks: true,
 });

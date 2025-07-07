@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
+import { boolean, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
 
 import { DateTime, defaultUUID, PG_DECIMAL, uuid_primary } from '@/lib/variables';
 import { users } from '@/routes/hr/schema';
@@ -185,12 +185,13 @@ export const job_entry = lib.table('job_entry', {
   vendor_uuid: defaultUUID('vendor_uuid').references(
     () => vendor.uuid,
     DEFAULT_OPERATION,
-  ),
+  ).default(sql`null`),
   quantity: PG_DECIMAL('quantity').default(sql`0`).notNull(),
   buying_unit_price: PG_DECIMAL('buying_unit_price').default(sql`0`).notNull(),
   selling_unit_price: PG_DECIMAL('selling_unit_price').default(sql`0`).notNull(),
   warranty_days: integer('warranty_days').default(sql`0`).notNull(),
-  purchased_at: DateTime('purchased_at'),
+  purchased_at: DateTime('purchased_at').default(sql`null`),
+  is_serial_needed: boolean('is_serial_needed').default(false),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,

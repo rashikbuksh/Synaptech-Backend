@@ -102,7 +102,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           'quantity', job_entry.quantity,
           'buying_unit_price', job_entry.buying_unit_price,
           'selling_unit_price', job_entry.selling_unit_price,
-          'warranty_days', job_entry.warranty_days
+          'warranty_days', job_entry.warranty_days,
+          'purchased_at', job_entry.purchased_at,
+          'is_serial_needed', job_entry.is_serial_needed
         )
         FROM lib.job_entry
         WHERE job_entry.job_uuid = ${job.uuid}
