@@ -1,9 +1,10 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -56,7 +57,25 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.product_serial.findMany();
+  const resultPromise = db.select({
+    uuid: product_serial.uuid,
+    job_entry_uuid: product_serial.job_entry_uuid,
+    index: product_serial.index,
+    serial: product_serial.serial,
+    created_by: product_serial.created_by,
+    created_by_name: hrSchema.users.name,
+    created_at: product_serial.created_at,
+    updated_at: product_serial.updated_at,
+    remarks: product_serial.remarks,
+  })
+    .from(product_serial)
+    .leftJoin(hrSchema.users, eq(hrSchema.users.uuid, product_serial.created_by))
+    .orderBy(desc(product_serial.created_at));
+
+  const data = await resultPromise;
+
+  if (!data)
+    return DataNotFound(c);
 
   return c.json(data || [], HSCode.OK);
 };
@@ -64,11 +83,28 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.product_serial.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  // const data = await db.query.product_serial.findFirst({
+  //   where(fields, operators) {
+  //     return operators.eq(fields.uuid, uuid);
+  //   },
+  // });
+
+  const resultPromise = db.select({
+    uuid: product_serial.uuid,
+    job_entry_uuid: product_serial.job_entry_uuid,
+    index: product_serial.index,
+    serial: product_serial.serial,
+    created_by: product_serial.created_by,
+    created_by_name: hrSchema.users.name,
+    created_at: product_serial.created_at,
+    updated_at: product_serial.updated_at,
+    remarks: product_serial.remarks,
+  })
+    .from(product_serial)
+    .leftJoin(hrSchema.users, eq(hrSchema.users.uuid, product_serial.created_by))
+    .where(eq(product_serial.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);
