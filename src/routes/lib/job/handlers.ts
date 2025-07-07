@@ -109,7 +109,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           'warranty_days', job_entry.warranty_days,
           'purchased_at', job_entry.purchased_at,
           'is_serial_needed', job_entry.is_serial_needed,
-          'product_serial', COALESCE(product_serial.product_serial, '[]'::jsonb)
+          'product_serial', COALESCE(product_serial.product_serial, '[]'::jsonb),
+          'is_update', true
         )
         FROM lib.job_entry
         LEFT JOIN (
