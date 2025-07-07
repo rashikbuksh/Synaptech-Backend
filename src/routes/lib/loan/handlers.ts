@@ -70,7 +70,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     updated_at: loan.updated_at,
     remarks: loan.remarks,
     total_paid_amount: sql`
-          COALESCE((SELECT SUM(loan_paid.amount) FROM lib.loan_paid WHERE loan_paid.loan_uuid = ${loan.uuid}), 0)`.as('total_amount'),
+          COALESCE((SELECT SUM(loan_paid.amount)::float8 FROM lib.loan_paid WHERE loan_paid.loan_uuid = ${loan.uuid}), 0)`.as('total_amount'),
 
   })
     .from(loan)
