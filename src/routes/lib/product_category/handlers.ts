@@ -4,6 +4,7 @@ import { eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -56,7 +57,23 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.product_category.findMany();
+  const resultPromise = db.select({
+    uuid: product_category.uuid,
+    name: product_category.name,
+    short_name: product_category.short_name,
+    created_by: product_category.created_by,
+    created_by_name: hrSchema.users.name,
+    created_at: product_category.created_at,
+    updated_at: product_category.updated_at,
+    remarks: product_category.remarks,
+  })
+    .from(product_category)
+    .leftJoin(hrSchema.users, eq(product_category.created_by, hrSchema.users.uuid));
+
+  const data = await resultPromise;
+
+  if (!data)
+    return DataNotFound(c);
 
   return c.json(data || [], HSCode.OK);
 };
