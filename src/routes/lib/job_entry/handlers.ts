@@ -14,15 +14,11 @@ import { job, job_entry, product, vendor } from '../schema';
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
-  console.log('Creating job entry with value:', value);
-
-  const resultPromise = db.insert(job_entry).values(value).returning({
+  const [data] = await db.insert(job_entry).values(value).returning({
     name: job_entry.uuid,
   });
 
-  const data = await resultPromise;
-
-  return c.json(createToast('create', data.length), HSCode.OK);
+  return c.json(createToast('create', data.name), HSCode.OK);
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
@@ -126,5 +122,5 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   if (!data)
     return DataNotFound(c);
 
-  return c.json(data[0] || {}, HSCode.OK);
+  return c.json(data || {}, HSCode.OK);
 };
