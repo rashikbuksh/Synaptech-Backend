@@ -3,7 +3,7 @@ import { boolean, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
 
 import { DateTime, defaultUUID, PG_DECIMAL, uuid_primary } from '@/lib/variables';
 import { users } from '@/routes/hr/schema';
-import { DEFAULT_OPERATION } from '@/utils/db';
+import { DEFAULT_OPERATION, DEFAULT_SEQUENCE } from '@/utils/db';
 
 const lib = pgSchema('lib');
 
@@ -64,8 +64,11 @@ export const client = lib.table('client', {
   remarks: text('remarks'),
 });
 
+export const job_id = lib.sequence('job_id', DEFAULT_SEQUENCE);
+
 export const job = lib.table('job', {
   uuid: uuid_primary,
+  id: integer('id').default(sql`nextval('lib.job_id')`).notNull(),
   work_order: text('work_order').notNull(),
   client_uuid: defaultUUID('client_uuid').references(
     () => client.uuid,

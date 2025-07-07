@@ -59,6 +59,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
     uuid: job.uuid,
+    id: job.id,
+    job_id: sql`CONCAT('J', TO_CHAR(${job.created_at}::timestamp, 'YY'), '-', ${job.id})`.as('job_id'),
     work_order: job.work_order,
     client_uuid: job.client_uuid,
     client_name: client.name,
@@ -82,6 +84,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
 
   const resultPromise = db.select({
     uuid: job.uuid,
+    id: job.id,
+    job_id: sql`CONCAT('J', TO_CHAR(${job.created_at}::timestamp, 'YY'), '-', ${job.id})`.as('job_id'),
     work_order: job.work_order,
     client_uuid: job.client_uuid,
     client_name: client.name,

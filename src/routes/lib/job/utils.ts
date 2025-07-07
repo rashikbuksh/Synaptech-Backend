@@ -29,6 +29,8 @@ export const insertSchema = createInsertSchema(
 }).partial({
   updated_at: true,
   remarks: true,
+}).omit({
+  id: true,
 });
 
 export const patchSchema = insertSchema.partial();
