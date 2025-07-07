@@ -104,9 +104,26 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           'selling_unit_price', job_entry.selling_unit_price,
           'warranty_days', job_entry.warranty_days,
           'purchased_at', job_entry.purchased_at,
-          'is_serial_needed', job_entry.is_serial_needed
+          'is_serial_needed', job_entry.is_serial_needed,
+          'product_serial', COALESCE(product_serial.product_serial, '[]'::jsonb)
         )
         FROM lib.job_entry
+        LEFT JOIN (
+          SELECT 
+            product_serial.job_entry_uuid,
+            COALESCE(
+              jsonb_agg(
+                jsonb_build_object(
+                  'uuid', product_serial.uuid,
+                  'job_entry_uuid', product_serial.job_entry_uuid,
+                  'index', product_serial.index,
+                  'serial', product_serial.serial
+                ) ORDER BY product_serial.index ASC
+              ), '[]'::jsonb
+            ) AS product_serial
+          FROM lib.product_serial
+          GROUP BY product_serial.job_entry_uuid
+        ) AS product_serial ON product_serial.job_entry_uuid = job_entry.uuid
         WHERE job_entry.job_uuid = ${job.uuid}
       ), ARRAY[]::jsonb[])`.as('job_entry'),
   })
