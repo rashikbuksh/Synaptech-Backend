@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -89,6 +89,13 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by_name: users.name,
     created_at: job.created_at,
     updated_at: job.updated_at,
+    job_entry: sql`
+      (
+        SELECT *
+        FROM job_entry
+        WHERE job_uuid = ${job.uuid}
+      ) AS job_entry
+    `,
   })
     .from(job)
     .leftJoin(users, eq(job.created_by, users.uuid))
