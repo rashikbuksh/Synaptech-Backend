@@ -107,7 +107,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
               'updated_at', loan_paid.updated_at,
               'remarks', loan_paid.remarks
             )
-            FROM loan_paid
+            FROM lib.loan_paid
             LEFT JOIN hr.users ON loan_paid.created_by = users.uuid
             WHERE loan_paid.loan_uuid = ${loan.uuid}
             ORDER BY loan_paid.index ASC
