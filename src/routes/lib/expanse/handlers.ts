@@ -4,6 +4,7 @@ import { desc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import { users } from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
@@ -63,7 +64,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     work_order: job.work_order,
     expense_at: expanse.expense_at,
     type: expanse.type,
-    amount: expanse.amount,
+    amount: PG_DECIMAL_TO_FLOAT(expanse.amount),
     reason: expanse.reason,
     created_by: expanse.created_by,
     created_by_name: users.name,
@@ -90,7 +91,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     work_order: job.work_order,
     expense_at: expanse.expense_at,
     type: expanse.type,
-    amount: expanse.amount,
+    amount: PG_DECIMAL_TO_FLOAT(expanse.amount),
     reason: expanse.reason,
     created_by: expanse.created_by,
     created_by_name: users.name,
