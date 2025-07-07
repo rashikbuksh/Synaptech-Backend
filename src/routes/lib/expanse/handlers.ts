@@ -1,14 +1,15 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { users } from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { expanse } from '../schema';
+import { expanse, job } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -56,7 +57,26 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.expanse.findMany();
+  const resultPromise = db.select({
+    uuid: expanse.uuid,
+    job_uuid: expanse.job_uuid,
+    work_order: job.work_order,
+    expense_at: expanse.expense_at,
+    type: expanse.type,
+    amount: expanse.amount,
+    reason: expanse.reason,
+    created_by: expanse.created_by,
+    created_by_name: users.name,
+    created_at: expanse.created_at,
+    updated_at: expanse.updated_at,
+    remarks: expanse.remarks,
+  })
+    .from(expanse)
+    .leftJoin(job, eq(expanse.job_uuid, job.uuid))
+    .leftJoin(users, eq(expanse.created_by, users.uuid))
+    .orderBy(desc(expanse.created_at));
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };
@@ -64,11 +84,26 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.expanse.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    uuid: expanse.uuid,
+    job_uuid: expanse.job_uuid,
+    work_order: job.work_order,
+    expense_at: expanse.expense_at,
+    type: expanse.type,
+    amount: expanse.amount,
+    reason: expanse.reason,
+    created_by: expanse.created_by,
+    created_by_name: users.name,
+    created_at: expanse.created_at,
+    updated_at: expanse.updated_at,
+    remarks: expanse.remarks,
+  })
+    .from(expanse)
+    .leftJoin(job, eq(expanse.job_uuid, job.uuid))
+    .leftJoin(users, eq(expanse.created_by, users.uuid))
+    .where(eq(expanse.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);

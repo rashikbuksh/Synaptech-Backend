@@ -1,9 +1,10 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { users } from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
@@ -56,7 +57,25 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.client.findMany();
+  const resultPromise = db.select({
+    uuid: client.uuid,
+    id: client.id,
+    name: client.name,
+    contact_name: client.contact_name,
+    contact_number: client.contact_number,
+    email: client.email,
+    address: client.address,
+    created_by: client.created_by,
+    created_by_name: users.name,
+    created_at: client.created_at,
+    updated_at: client.updated_at,
+    remarks: client.remarks,
+  })
+    .from(client)
+    .leftJoin(users, eq(client.created_by, users.uuid))
+    .orderBy(desc(client.created_at));
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };
@@ -64,11 +83,25 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.client.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    uuid: client.uuid,
+    id: client.id,
+    name: client.name,
+    contact_name: client.contact_name,
+    contact_number: client.contact_number,
+    email: client.email,
+    address: client.address,
+    created_by: client.created_by,
+    created_by_name: users.name,
+    created_at: client.created_at,
+    updated_at: client.updated_at,
+    remarks: client.remarks,
+  })
+    .from(client)
+    .leftJoin(users, eq(client.created_by, users.uuid))
+    .where(eq(client.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);

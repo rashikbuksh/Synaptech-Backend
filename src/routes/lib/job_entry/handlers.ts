@@ -1,14 +1,15 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq } from 'drizzle-orm';
+import { desc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import { users } from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { job_entry } from '../schema';
+import { job, job_entry, product, vendor } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -56,7 +57,33 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
-  const data = await db.query.job_entry.findMany();
+  const resultPromise = db.select({
+    uuid: job_entry.uuid,
+    job_uuid: job_entry.job_uuid,
+    work_order: job.work_order,
+    product_uuid: job_entry.product_uuid,
+    product_name: product.name,
+    vendor_uuid: job_entry.vendor_uuid,
+    vendor_name: vendor.name,
+    quantity: job_entry.quantity,
+    buying_unit_price: job_entry.buying_unit_price,
+    selling_unit_price: job_entry.selling_unit_price,
+    warranty_days: job_entry.warranty_days,
+    purchased_at: job_entry.purchased_at,
+    created_by: job_entry.created_by,
+    created_by_name: users.name,
+    created_at: job_entry.created_at,
+    updated_at: job_entry.updated_at,
+    remarks: job_entry.remarks,
+  })
+    .from(job_entry)
+    .leftJoin(job, eq(job_entry.job_uuid, job.uuid))
+    .leftJoin(product, eq(job_entry.product_uuid, product.uuid))
+    .leftJoin(vendor, eq(job_entry.vendor_uuid, vendor.uuid))
+    .leftJoin(users, eq(job_entry.created_by, users.uuid))
+    .orderBy(desc(job_entry.created_at));
+
+  const data = await resultPromise;
 
   return c.json(data || [], HSCode.OK);
 };
@@ -64,11 +91,33 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
 export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const data = await db.query.job_entry.findFirst({
-    where(fields, operators) {
-      return operators.eq(fields.uuid, uuid);
-    },
-  });
+  const resultPromise = db.select({
+    uuid: job_entry.uuid,
+    job_uuid: job_entry.job_uuid,
+    work_order: job.work_order,
+    product_uuid: job_entry.product_uuid,
+    product_name: product.name,
+    vendor_uuid: job_entry.vendor_uuid,
+    vendor_name: vendor.name,
+    quantity: job_entry.quantity,
+    buying_unit_price: job_entry.buying_unit_price,
+    selling_unit_price: job_entry.selling_unit_price,
+    warranty_days: job_entry.warranty_days,
+    purchased_at: job_entry.purchased_at,
+    created_by: job_entry.created_by,
+    created_by_name: users.name,
+    created_at: job_entry.created_at,
+    updated_at: job_entry.updated_at,
+    remarks: job_entry.remarks,
+  })
+    .from(job_entry)
+    .leftJoin(job, eq(job_entry.job_uuid, job.uuid))
+    .leftJoin(product, eq(job_entry.product_uuid, product.uuid))
+    .leftJoin(vendor, eq(job_entry.vendor_uuid, vendor.uuid))
+    .leftJoin(users, eq(job_entry.created_by, users.uuid))
+    .where(eq(job_entry.uuid, uuid));
+
+  const data = await resultPromise;
 
   if (!data)
     return DataNotFound(c);

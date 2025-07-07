@@ -1,5 +1,5 @@
 import { relations, sql } from 'drizzle-orm';
-import { boolean, integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
+import { integer, pgSchema, serial, text } from 'drizzle-orm/pg-core';
 
 import { DateTime, defaultUUID, PG_DECIMAL, uuid_primary } from '@/lib/variables';
 import { users } from '@/routes/hr/schema';
