@@ -137,8 +137,9 @@ export const getPaymentByJobUuid: AppRouteHandler<GetPaymentByJobUuidRoute> = as
 
   const data = await resultPromise;
 
-  if (!data)
-    return DataNotFound(c);
+  const response = {
+    payment: data || [],
+  };
 
-  return c.json(data || [], HSCode.OK);
+  return c.json(response, HSCode.OK);
 };
