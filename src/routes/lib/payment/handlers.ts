@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq } from 'drizzle-orm';
+import { asc, desc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -8,7 +8,7 @@ import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import * as hrSchema from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
-import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
+import type { CreateRoute, GetOneRoute, GetPaymentByJobUuidRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
 import { payment } from '../schema';
 
@@ -106,6 +106,34 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     .from(payment)
     .leftJoin(hrSchema.users, eq(hrSchema.users.uuid, payment.created_by))
     .where(eq(payment.uuid, uuid));
+
+  const data = await resultPromise;
+
+  if (!data)
+    return DataNotFound(c);
+
+  return c.json(data[0] || {}, HSCode.OK);
+};
+
+export const getPaymentByJobUuid: AppRouteHandler<GetPaymentByJobUuidRoute> = async (c: any) => {
+  const { job_uuid } = c.req.valid('param');
+
+  const resultPromise = db.select({
+    uuid: payment.uuid,
+    index: payment.index,
+    job_uuid: payment.job_uuid,
+    paid_at: payment.paid_at,
+    method: payment.method,
+    amount: PG_DECIMAL_TO_FLOAT(payment.amount),
+    created_by: payment.created_by,
+    created_by_name: hrSchema.users.name,
+    created_at: payment.created_at,
+    updated_at: payment.updated_at,
+  })
+    .from(payment)
+    .leftJoin(hrSchema.users, eq(hrSchema.users.uuid, payment.created_by))
+    .where(eq(payment.job_uuid, job_uuid))
+    .orderBy(asc(payment.index));
 
   const data = await resultPromise;
 

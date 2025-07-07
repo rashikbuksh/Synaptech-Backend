@@ -67,6 +67,29 @@ export const getOne = createRoute({
   },
 });
 
+export const getPaymentByJobUuid = createRoute({
+  path: '/lib/job-payment/{job_uuid}',
+  method: 'get',
+  request: {
+    params: param.uuid,
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      selectSchema,
+      'The requested payment',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'Payment not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(param.uuid),
+      'Invalid id error',
+    ),
+  },
+});
+
 export const patch = createRoute({
   path: '/lib/payment/{uuid}',
   method: 'patch',
@@ -120,5 +143,6 @@ export const remove = createRoute({
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
+export type GetPaymentByJobUuidRoute = typeof getPaymentByJobUuid;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
