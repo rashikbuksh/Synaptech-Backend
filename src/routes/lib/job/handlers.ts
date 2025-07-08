@@ -164,6 +164,24 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
         ) AS product_serial ON product_serial.job_entry_uuid = job_entry.uuid
         WHERE job_entry.job_uuid = ${job.uuid}
       ), ARRAY[]::jsonb[])`.as('job_entry'),
+    payment: sql`
+      COALESCE(ARRAY(
+        SELECT jsonb_build_object(
+          'uuid', payment.uuid,
+          'job_uuid', payment.job_uuid,
+          'paid_at', payment.paid_at,
+          'method', payment.method,
+          'amount', payment.amount,
+          'created_by', payment.created_by,
+          'created_by_name', payment_user.name,
+          'created_at', payment.created_at,
+          'updated_at', payment.updated_at,
+          'remarks', payment.remarks
+        ) ORDER BY payment.created_at ASC
+        FROM lib.payment
+        LEFT JOIN hr.users AS payment_user ON payment.created_by = payment_user.uuid
+        WHERE payment.job_uuid = ${job.uuid}
+      ), ARRAY[]::jsonb[])`.as('payment'),
   })
     .from(job)
     .leftJoin(users, eq(job.created_by, users.uuid))
