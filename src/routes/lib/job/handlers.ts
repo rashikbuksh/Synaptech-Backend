@@ -165,7 +165,18 @@ export const profitSummary: AppRouteHandler<ProfitSummaryRoute> = async (c: any)
     .leftJoin(client, eq(job.client_uuid, client.uuid))
     .leftJoin(job_entry, eq(job.uuid, job_entry.job_uuid))
     .leftJoin(expense, eq(job.uuid, expense.job_uuid))
-    .leftJoin(users, eq(job.created_by, users.uuid));
+    .leftJoin(users, eq(job.created_by, users.uuid))
+    .groupBy(
+      job.uuid,
+      job.id,
+      job.created_at,
+      job.work_order,
+      job.client_uuid,
+      job.created_by,
+      job.remarks,
+      client.name,
+      users.name,
+    );
 
   const data = await resultPromise;
 
