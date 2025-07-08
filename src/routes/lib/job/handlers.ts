@@ -70,10 +70,10 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_by_name: users.name,
     created_at: job.created_at,
     updated_at: job.updated_at,
-    total_buying_price: sql`COALESCE(job_entry_total.total_buying_price, 0)`.as('total_buying_price'),
-    total_selling_price: sql`COALESCE(job_entry_total.total_selling_price, 0)`.as('total_selling_price'),
-    total_payment: sql`COALESCE(payment_total.total_payment, 0)`.as('total_payment'),
-    total_balance: sql`COALESCE(job_entry_total.total_selling_price, 0) - COALESCE(payment_total.total_payment, 0)`.as('total_balance'),
+    total_buying_price: sql`COALESCE(job_entry_total.total_buying_price, 0)::float8`.as('total_buying_price'),
+    total_selling_price: sql`COALESCE(job_entry_total.total_selling_price, 0)::float8`.as('total_selling_price'),
+    total_payment: sql`COALESCE(payment_total.total_payment, 0)::float8`.as('total_payment'),
+    total_balance: sql`COALESCE(job_entry_total.total_selling_price, 0)::float8 - COALESCE(payment_total.total_payment, 0)::float8`.as('total_balance'),
   })
     .from(job)
     .leftJoin(users, eq(job.created_by, users.uuid))
