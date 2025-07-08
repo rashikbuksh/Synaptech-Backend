@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { asc, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -35,7 +35,8 @@ export const productDatabase: AppRouteHandler<ProductDatabaseRoute> = async (c: 
     .leftJoin(job_entry, eq(job.uuid, job_entry.job_uuid))
     .leftJoin(product, eq(job_entry.product_uuid, product.uuid))
     .leftJoin(product_serial, eq(job_entry.uuid, product_serial.job_entry_uuid))
-    .leftJoin(vendor, eq(job_entry.vendor_uuid, vendor.uuid));
+    .leftJoin(vendor, eq(job_entry.vendor_uuid, vendor.uuid))
+    .orderBy(asc(product.name));
 
   const data = await resultPromise;
 
