@@ -24,7 +24,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
       name: product_serial.uuid,
     });
 
-    return c.json(data.map(item => createToast('create', item.name)), HSCode.OK);
+    return c.json(createToast('create', `${data.length} records created successfully`), HSCode.OK);
   }
 
   // Handle single object
@@ -66,7 +66,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
       return DataNotFound(c);
     }
 
-    return c.json(results.map(data => createToast('update', data.name)), HSCode.OK);
+    return c.json(createToast('update', `${results.length} records updated successfully`), HSCode.OK);
   }
 
   // Handle single object update
