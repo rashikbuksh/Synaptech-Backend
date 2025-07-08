@@ -74,6 +74,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     total_selling_price: sql`COALESCE(job_entry_total.total_selling_price, 0)::float8`.as('total_selling_price'),
     total_payment: sql`COALESCE(payment_total.total_payment, 0)::float8`.as('total_payment'),
     total_balance: sql`COALESCE(job_entry_total.total_selling_price, 0)::float8 - COALESCE(payment_total.total_payment, 0)::float8`.as('total_balance'),
+    payment_methods: sql`COALESCE(payment_total.payment_methods, '')`.as('payment_methods'),
   })
     .from(job)
     .leftJoin(users, eq(job.created_by, users.uuid))
@@ -95,6 +96,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
       (
         SELECT 
           payment.job_uuid,
+          string_agg(
+            payment.method, ', '
+          ) AS payment_methods,
           SUM(payment.amount) AS total_payment
         FROM lib.payment
         GROUP BY payment.job_uuid
