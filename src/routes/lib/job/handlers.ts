@@ -97,7 +97,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
         SELECT 
           payment.job_uuid,
           string_agg(
-            payment.method::text, ', '
+            DISTINCT payment.method::text, ', '
           ) AS payment_methods,
           SUM(payment.amount) AS total_payment
         FROM lib.payment
