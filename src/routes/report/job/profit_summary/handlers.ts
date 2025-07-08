@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { eq, sql } from 'drizzle-orm';
+import { desc, eq, sql } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -22,8 +22,8 @@ export const profitSummary: AppRouteHandler<ProfitSummaryRoute> = async (c: any)
     created_at: job.created_at,
     updated_at: job.updated_at,
     remarks: job.remarks,
-    total_sell_revenue: sql`COALESCE((SELECT SUM(job_entry.selling_unit_price)::float8 FROM lib.job_entry WHERE job_entry.job_uuid = ${job.uuid}), 0)`.as('total_sell_revenue'),
-    total_purchased_cost: sql`COALESCE((SELECT SUM(job_entry.buying_unit_price)::float8 FROM lib.job_entry WHERE job_entry.job_uuid = ${job.uuid}), 0)`.as('total_purchased_cost'),
+    total_sell_revenue: sql`COALESCE((SELECT SUM(job_entry.selling_unit_price * job_entry.quantity)::float8 FROM lib.job_entry WHERE job_entry.job_uuid = ${job.uuid}), 0)`.as('total_sell_revenue'),
+    total_purchased_cost: sql`COALESCE((SELECT SUM(job_entry.buying_unit_price * job_entry.quantity)::float8 FROM lib.job_entry WHERE job_entry.job_uuid = ${job.uuid}), 0)`.as('total_purchased_cost'),
     operational_expenses: sql`COALESCE((SELECT SUM(expense.amount)::float8 FROM lib.expense WHERE expense.job_uuid = ${job.uuid}), 0)`.as('operational_expenses'),
   })
     .from(job)
@@ -41,7 +41,8 @@ export const profitSummary: AppRouteHandler<ProfitSummaryRoute> = async (c: any)
       job.remarks,
       client.name,
       users.name,
-    );
+    )
+    .orderBy(desc(job.id));
 
   const data = await resultPromise;
 
