@@ -10,13 +10,13 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { expanse, job } from '../schema';
+import { expense, job } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
-  const [data] = await db.insert(expanse).values(value).returning({
-    name: expanse.uuid,
+  const [data] = await db.insert(expense).values(value).returning({
+    name: expense.uuid,
   });
 
   return c.json(createToast('create', data.name), HSCode.OK);
@@ -29,11 +29,11 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   if (Object.keys(updates).length === 0)
     return ObjectNotFound(c);
 
-  const [data] = await db.update(expanse)
+  const [data] = await db.update(expense)
     .set(updates)
-    .where(eq(expanse.uuid, uuid))
+    .where(eq(expense.uuid, uuid))
     .returning({
-      name: expanse.uuid,
+      name: expense.uuid,
     });
 
   if (!data)
@@ -45,10 +45,10 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
-  const [data] = await db.delete(expanse)
-    .where(eq(expanse.uuid, uuid))
+  const [data] = await db.delete(expense)
+    .where(eq(expense.uuid, uuid))
     .returning({
-      name: expanse.uuid,
+      name: expense.uuid,
     });
 
   if (!data)
@@ -59,24 +59,24 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
   const resultPromise = db.select({
-    uuid: expanse.uuid,
-    job_uuid: expanse.job_uuid,
+    uuid: expense.uuid,
+    job_uuid: expense.job_uuid,
     job_id: sql`CONCAT('J', TO_CHAR(${job.created_at}::timestamp, 'YY'), '-', ${job.id})`.as('job_id'),
     work_order: job.work_order,
-    expense_at: expanse.expense_at,
-    type: expanse.type,
-    amount: PG_DECIMAL_TO_FLOAT(expanse.amount),
-    reason: expanse.reason,
-    created_by: expanse.created_by,
+    expense_at: expense.expense_at,
+    type: expense.type,
+    amount: PG_DECIMAL_TO_FLOAT(expense.amount),
+    reason: expense.reason,
+    created_by: expense.created_by,
     created_by_name: users.name,
-    created_at: expanse.created_at,
-    updated_at: expanse.updated_at,
-    remarks: expanse.remarks,
+    created_at: expense.created_at,
+    updated_at: expense.updated_at,
+    remarks: expense.remarks,
   })
-    .from(expanse)
-    .leftJoin(job, eq(expanse.job_uuid, job.uuid))
-    .leftJoin(users, eq(expanse.created_by, users.uuid))
-    .orderBy(desc(expanse.created_at));
+    .from(expense)
+    .leftJoin(job, eq(expense.job_uuid, job.uuid))
+    .leftJoin(users, eq(expense.created_by, users.uuid))
+    .orderBy(desc(expense.created_at));
 
   const data = await resultPromise;
 
@@ -87,23 +87,23 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
 
   const resultPromise = db.select({
-    uuid: expanse.uuid,
-    job_uuid: expanse.job_uuid,
+    uuid: expense.uuid,
+    job_uuid: expense.job_uuid,
     work_order: job.work_order,
-    expense_at: expanse.expense_at,
-    type: expanse.type,
-    amount: PG_DECIMAL_TO_FLOAT(expanse.amount),
-    reason: expanse.reason,
-    created_by: expanse.created_by,
+    expense_at: expense.expense_at,
+    type: expense.type,
+    amount: PG_DECIMAL_TO_FLOAT(expense.amount),
+    reason: expense.reason,
+    created_by: expense.created_by,
     created_by_name: users.name,
-    created_at: expanse.created_at,
-    updated_at: expanse.updated_at,
-    remarks: expanse.remarks,
+    created_at: expense.created_at,
+    updated_at: expense.updated_at,
+    remarks: expense.remarks,
   })
-    .from(expanse)
-    .leftJoin(job, eq(expanse.job_uuid, job.uuid))
-    .leftJoin(users, eq(expanse.created_by, users.uuid))
-    .where(eq(expanse.uuid, uuid));
+    .from(expense)
+    .leftJoin(job, eq(expense.job_uuid, job.uuid))
+    .leftJoin(users, eq(expense.created_by, users.uuid))
+    .where(eq(expense.uuid, uuid));
 
   const data = await resultPromise;
 

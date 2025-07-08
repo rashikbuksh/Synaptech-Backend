@@ -3,13 +3,13 @@ import { z } from 'zod';
 
 import { dateTimePattern } from '@/utils';
 
-import { expanse } from '../schema';
+import { expense } from '../schema';
 
 //* crud
-export const selectSchema = createSelectSchema(expanse);
+export const selectSchema = createSelectSchema(expense);
 
 export const insertSchema = createInsertSchema(
-  expanse,
+  expense,
   {
     uuid: schema => schema.uuid.length(21),
     job_uuid: schema => schema.job_uuid.length(21).optional(),
