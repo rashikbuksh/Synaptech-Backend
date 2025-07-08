@@ -132,9 +132,12 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           'uuid', job_entry.uuid,
           'job_uuid', job_entry.job_uuid,
           'product_uuid', job_entry.product_uuid,
+          'product_name', product.name,
           'vendor_uuid', job_entry.vendor_uuid,
+          'vendor_name', vendor.name,
           'created_by', job_entry.created_by,
           'created_at', job_entry.created_at,
+          'created_by_name', job_entry_user.name,
           'updated_at', job_entry.updated_at,
           'quantity', job_entry.quantity,
           'buying_unit_price', job_entry.buying_unit_price,
@@ -142,10 +145,12 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           'warranty_days', job_entry.warranty_days,
           'purchased_at', job_entry.purchased_at,
           'is_serial_needed', job_entry.is_serial_needed,
-          'product_serial', COALESCE(product_serial.product_serial, '[]'::jsonb),
-          'is_update', true
+          'product_serial', COALESCE(product_serial.product_serial, '[]'::jsonb)
         )
         FROM lib.job_entry
+        LEFT JOIN hr.users AS job_entry_user ON job_entry.created_by = job_entry_user.uuid
+        LEFT JOIN lib.product ON job_entry.product_uuid = product.uuid
+        LEFT JOIN lib.vendor ON job_entry.vendor_uuid = vendor.uuid
         LEFT JOIN (
           SELECT 
             product_serial.job_entry_uuid,
