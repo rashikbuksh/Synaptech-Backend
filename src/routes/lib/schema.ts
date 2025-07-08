@@ -156,7 +156,7 @@ export const payment = lib.table('payment', {
   remarks: text('remarks'),
 });
 
-export const expanse = lib.table('expense', {
+export const expense = lib.table('expense', {
   uuid: uuid_primary,
   job_uuid: defaultUUID('job_uuid').references(
     () => job.uuid,
@@ -295,13 +295,13 @@ export const paymentRelations = relations(payment, ({ one }) => ({
   }),
 }));
 
-export const expenseRelations = relations(expanse, ({ one }) => ({
+export const expenseRelations = relations(expense, ({ one }) => ({
   job: one(job, {
-    fields: [expanse.job_uuid],
+    fields: [expense.job_uuid],
     references: [job.uuid],
   }),
   createdBy: one(users, {
-    fields: [expanse.created_by],
+    fields: [expense.created_by],
     references: [users.uuid],
   }),
 }));

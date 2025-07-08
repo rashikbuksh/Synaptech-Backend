@@ -1,5 +1,5 @@
 import client from './client';
-import expanse from './expanse';
+import expanse from './expense';
 import job from './job';
 import job_entry from './job_entry';
 import loan from './loan';

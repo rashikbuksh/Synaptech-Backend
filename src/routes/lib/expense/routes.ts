@@ -8,34 +8,34 @@ import { createRoute, z } from '@hono/zod-openapi';
 
 import { insertSchema, patchSchema, selectSchema } from './utils';
 
-const tags = ['lib.expanse'];
+const tags = ['lib.expense'];
 
 export const list = createRoute({
-  path: '/lib/expanse',
+  path: '/lib/expense',
   method: 'get',
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       z.array(selectSchema),
-      'The list of expanse',
+      'The list of expense',
     ),
   },
 });
 
 export const create = createRoute({
-  path: '/lib/expanse',
+  path: '/lib/expense',
   method: 'post',
   request: {
     body: jsonContentRequired(
       insertSchema,
-      'The expanse to create',
+      'The expense to create',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The created expanse',
+      'The created expense',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(insertSchema),
@@ -45,7 +45,7 @@ export const create = createRoute({
 });
 
 export const getOne = createRoute({
-  path: '/lib/expanse/{uuid}',
+  path: '/lib/expense/{uuid}',
   method: 'get',
   request: {
     params: param.uuid,
@@ -54,11 +54,11 @@ export const getOne = createRoute({
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The requested expanse',
+      'The requested expense',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'Expanse not found',
+      'Expense not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
@@ -68,24 +68,24 @@ export const getOne = createRoute({
 });
 
 export const patch = createRoute({
-  path: '/lib/expanse/{uuid}',
+  path: '/lib/expense/{uuid}',
   method: 'patch',
   request: {
     params: param.uuid,
     body: jsonContentRequired(
       patchSchema,
-      'The expanse updates',
+      'The expense updates',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
       selectSchema,
-      'The updated expanse',
+      'The updated expense',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'Expanse not found',
+      'Expense not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(patchSchema)
@@ -96,7 +96,7 @@ export const patch = createRoute({
 });
 
 export const remove = createRoute({
-  path: '/lib/expanse/{uuid}',
+  path: '/lib/expense/{uuid}',
   method: 'delete',
   request: {
     params: param.uuid,
@@ -104,11 +104,11 @@ export const remove = createRoute({
   tags,
   responses: {
     [HSCode.NO_CONTENT]: {
-      description: 'Expanse deleted',
+      description: 'Expense deleted',
     },
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
-      'Expanse not found',
+      'Expense not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
       createErrorSchema(param.uuid),
