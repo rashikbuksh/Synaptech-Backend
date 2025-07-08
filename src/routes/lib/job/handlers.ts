@@ -64,14 +64,43 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     work_order: job.work_order,
     client_uuid: job.client_uuid,
     client_name: client.name,
+    contact_name: client.contact_name,
+    contact_number: client.contact_number,
     created_by: job.created_by,
     created_by_name: users.name,
     created_at: job.created_at,
     updated_at: job.updated_at,
+    total_buying_price: sql`COALESCE(job_entry_total.total_buying_price, 0)`.as('total_buying_price'),
+    total_selling_price: sql`COALESCE(job_entry_total.total_selling_price, 0)`.as('total_selling_price'),
+    total_payment: sql`COALESCE(payment_total.total_payment, 0)`.as('total_payment'),
+    total_balance: sql`COALESCE(job_entry_total.total_selling_price, 0) - COALESCE(payment_total.total_payment, 0)`.as('total_balance'),
   })
     .from(job)
     .leftJoin(users, eq(job.created_by, users.uuid))
     .leftJoin(client, eq(job.client_uuid, client.uuid))
+    .leftJoin(
+      sql`
+      (
+        SELECT
+          job_entry.job_uuid,
+          SUM(quantity * buying_unit_price) AS total_buying_price,
+          SUM(quantity * selling_unit_price) AS total_selling_price
+        FROM lib.job_entry
+        GROUP BY job_entry.job_uuid
+        ) as job_entry_total`,
+      eq(job.uuid, sql`job_entry_total.job_uuid`),
+    )
+    .leftJoin(
+      sql`
+      (
+        SELECT 
+          payment.job_uuid,
+          SUM(payment.amount) AS total_payment
+        FROM lib.payment
+        GROUP BY payment.job_uuid
+      ) as payment_total`,
+      eq(job.uuid, sql`payment_total.job_uuid`),
+    )
     .orderBy(desc(job.created_at));
 
   const data = await resultPromise;
