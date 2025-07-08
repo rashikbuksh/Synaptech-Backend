@@ -177,7 +177,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           'created_at', payment.created_at,
           'updated_at', payment.updated_at,
           'remarks', payment.remarks
-        ) ORDER BY payment.created_at ASC
+        )
         FROM lib.payment
         LEFT JOIN hr.users AS payment_user ON payment.created_by = payment_user.uuid
         WHERE payment.job_uuid = ${job.uuid}
