@@ -117,32 +117,8 @@ export const remove = createRoute({
   },
 });
 
-export const profitSummary = createRoute({
-  path: '/lib/job-profit-summary',
-  method: 'get',
-  tags,
-  responses: {
-    [HSCode.OK]: jsonContent(
-      z.object({
-        uuid: z.string().describe('Job UUID'),
-        job_id: z.string().describe('Job ID'),
-        work_order: z.string().describe('Work order number'),
-        client_uuid: z.string().describe('Client UUID'),
-        client_name: z.string().describe('Client name'),
-        remarks: z.string().optional().describe('Remarks for the job'),
-        total_sell_revenue: z.number().describe('Total sell revenue for the job'),
-        total_purchased_cost: z.number().describe('Total purchased cost for the job'),
-        operational_expenses: z.number().describe('Operational expenses for the job'),
-
-      }),
-      'The profit summary for jobs',
-    ),
-  },
-});
-
 export type ListRoute = typeof list;
 export type CreateRoute = typeof create;
 export type GetOneRoute = typeof getOne;
 export type PatchRoute = typeof patch;
 export type RemoveRoute = typeof remove;
-export type ProfitSummaryRoute = typeof profitSummary;

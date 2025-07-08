@@ -3,7 +3,7 @@ import { jsonContent } from 'stoker/openapi/helpers';
 
 import { createRoute, z } from '@hono/zod-openapi';
 
-const tags = ['other'];
+const tags = ['others'];
 
 export const valueLabel = createRoute({
   path: '/other/lib/job/value/label',
