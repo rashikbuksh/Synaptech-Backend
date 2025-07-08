@@ -27,18 +27,18 @@ export const create = createRoute({
   method: 'post',
   request: {
     body: jsonContentRequired(
-      insertSchema,
-      'The product serial to create',
+      z.union([insertSchema, z.array(insertSchema)]),
+      'The product serial(s) to create (single object or array of objects)',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
-      selectSchema,
-      'The created product serial',
+      z.union([selectSchema, z.array(selectSchema)]),
+      'The created product serial(s)',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(insertSchema),
+      createErrorSchema(z.union([insertSchema, z.array(insertSchema)])),
       'The validation error(s)',
     ),
   },
@@ -73,28 +73,27 @@ export const patch = createRoute({
   request: {
     params: param.uuid,
     body: jsonContentRequired(
-      patchSchema,
-      'The product serial updates',
+      z.union([patchSchema, z.array(patchSchema)]),
+      'The product serial updates (single object or array of objects)',
     ),
   },
   tags,
   responses: {
     [HSCode.OK]: jsonContent(
-      selectSchema,
-      'The updated product serial',
+      z.union([selectSchema, z.array(selectSchema)]),
+      'The updated product serial(s)',
     ),
     [HSCode.NOT_FOUND]: jsonContent(
       notFoundSchema,
       'Product serial not found',
     ),
     [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
-      createErrorSchema(patchSchema)
+      createErrorSchema(z.union([patchSchema, z.array(patchSchema)]))
         .or(createErrorSchema(param.uuid)),
       'The validation error(s)',
     ),
   },
 });
-
 export const remove = createRoute({
   path: '/lib/product-serial/{uuid}',
   method: 'delete',

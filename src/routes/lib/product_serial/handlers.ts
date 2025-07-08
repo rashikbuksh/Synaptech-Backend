@@ -14,6 +14,20 @@ import { product_serial } from '../schema';
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
+  // Handle array of objects
+  if (Array.isArray(value)) {
+    if (value.length === 0) {
+      return ObjectNotFound(c);
+    }
+
+    const data = await db.insert(product_serial).values(value).returning({
+      name: product_serial.uuid,
+    });
+
+    return c.json(data.map(item => createToast('create', item.name)), HSCode.OK);
+  }
+
+  // Handle single object
   const [data] = await db.insert(product_serial).values(value).returning({
     name: product_serial.uuid,
   });
@@ -25,6 +39,37 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
   const updates = c.req.valid('json');
 
+  // Handle array of updates
+  if (Array.isArray(updates)) {
+    if (updates.length === 0) {
+      return ObjectNotFound(c);
+    }
+
+    const results = [];
+    for (const update of updates) {
+      if (Object.keys(update).length === 0)
+        continue;
+
+      const [data] = await db.update(product_serial)
+        .set(update)
+        .where(eq(product_serial.uuid, uuid))
+        .returning({
+          name: product_serial.uuid,
+        });
+
+      if (data) {
+        results.push(data);
+      }
+    }
+
+    if (results.length === 0) {
+      return DataNotFound(c);
+    }
+
+    return c.json(results.map(data => createToast('update', data.name)), HSCode.OK);
+  }
+
+  // Handle single object update
   if (Object.keys(updates).length === 0)
     return ObjectNotFound(c);
 
