@@ -181,7 +181,8 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
           'created_by_name', payment_user.name,
           'created_at', payment.created_at,
           'updated_at', payment.updated_at,
-          'remarks', payment.remarks
+          'remarks', payment.remarks,
+          'index', payment.index
         )
         FROM lib.payment
         LEFT JOIN hr.users AS payment_user ON payment.created_by = payment_user.uuid
