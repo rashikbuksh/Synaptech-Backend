@@ -18,7 +18,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     name: product_category.name,
   });
 
-  return c.json(createToast('create', data.name), HSCode.OK);
+  return c.json(createToast('create', data.name ?? ''), HSCode.OK);
 };
 
 export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
@@ -38,7 +38,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   if (!data)
     return DataNotFound(c);
 
-  return c.json(createToast('update', data.name), HSCode.OK);
+  return c.json(createToast('update', data.name ?? ''), HSCode.OK);
 };
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
@@ -53,7 +53,7 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   if (!data)
     return DataNotFound(c);
 
-  return c.json(createToast('delete', data.name), HSCode.OK);
+  return c.json(createToast('delete', data.name ?? ''), HSCode.OK);
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
