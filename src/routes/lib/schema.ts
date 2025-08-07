@@ -15,7 +15,7 @@ export const loan = lib.table('loan', {
   uuid: uuid_primary,
   lender_name: text('lender_name').notNull(),
   type: loan_type('type').notNull(),
-  amount: PG_DECIMAL('amount').notNull(),
+  amount: PG_DECIMAL('amount').default(sql`0`),
   taken_at: DateTime('taken_at'),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
@@ -37,7 +37,7 @@ export const loan_paid = lib.table('loan_paid', {
   ),
   index: integer('index').notNull(),
   type: loan_paid_type('type').default('cash').notNull(),
-  amount: PG_DECIMAL('amount').notNull(),
+  amount: PG_DECIMAL('amount').default(sql`0`),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,
@@ -51,10 +51,10 @@ export const client = lib.table('client', {
   uuid: uuid_primary,
   id: serial('id').notNull(),
   name: text('name').notNull(),
-  contact_name: text('contact_name').notNull(),
-  contact_number: text('contact_number').notNull(),
-  email: text('email').notNull(),
-  address: text('address'),
+  contact_name: text('contact_name').default(sql`null`),
+  contact_number: text('contact_number').default(sql`null`),
+  email: text('email').default(sql`null`),
+  address: text('address').default(sql`null`),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,
@@ -85,8 +85,8 @@ export const job = lib.table('job', {
 
 export const product_category = lib.table('product_category', {
   uuid: uuid_primary,
-  name: text('name').notNull().unique(),
-  short_name: text('short_name').notNull().unique(),
+  name: text('name'),
+  short_name: text('short_name').default(sql`null`),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,
@@ -98,7 +98,7 @@ export const product_category = lib.table('product_category', {
 
 export const product = lib.table('product', {
   uuid: uuid_primary,
-  name: text('name').notNull(),
+  name: text('name').default(sql`null`),
   product_category_uuid: defaultUUID('product_category_uuid').references(
     () => product_category.uuid,
     DEFAULT_OPERATION,
@@ -116,12 +116,12 @@ export const vendor = lib.table('vendor', {
   uuid: uuid_primary,
   id: serial('id').notNull(),
   name: text('name').notNull(),
-  phone: text('phone').notNull(),
-  address: text('address').notNull(),
-  purpose: text('purpose').notNull(),
-  starting_date: DateTime('starting_date').notNull(),
-  ending_date: DateTime('ending_date').notNull(),
-  product_type: text('product_type').notNull(),
+  phone: text('phone').default(sql`null`),
+  address: text('address').default(sql`null`),
+  purpose: text('purpose').default(sql`null`),
+  starting_date: DateTime('starting_date').default(sql`null`),
+  ending_date: DateTime('ending_date').default(sql`null`),
+  product_type: text('product_type').default(sql`null`),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,
