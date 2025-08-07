@@ -22,15 +22,15 @@ export const insertSchema = createInsertSchema(
 ).required({
   uuid: true,
   name: true,
+  created_by: true,
+  created_at: true,
+}).partial({
   phone: true,
   address: true,
   purpose: true,
   starting_date: true,
   ending_date: true,
   product_type: true,
-  created_by: true,
-  created_at: true,
-}).partial({
   updated_at: true,
   remarks: true,
 }).omit({

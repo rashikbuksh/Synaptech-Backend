@@ -24,11 +24,11 @@ export const insertSchema = createInsertSchema(
 ).required({
   uuid: true,
   loan_uuid: true,
-  index: true,
-  amount: true,
   created_by: true,
   created_at: true,
 }).partial({
+  index: true,
+  amount: true,
   type: true,
   updated_at: true,
   remarks: true,

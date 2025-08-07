@@ -13,8 +13,8 @@ export const loan_type = lib.enum('loan_type', ['friend', 'business', 'family'])
 
 export const loan = lib.table('loan', {
   uuid: uuid_primary,
-  lender_name: text('lender_name').notNull(),
-  type: loan_type('type').notNull(),
+  lender_name: text('lender_name').default(sql`null`),
+  type: loan_type('type').default('business'),
   amount: PG_DECIMAL('amount').default(sql`0`),
   taken_at: DateTime('taken_at'),
   created_by: defaultUUID('created_by').references(
@@ -35,8 +35,8 @@ export const loan_paid = lib.table('loan_paid', {
     () => loan.uuid,
     DEFAULT_OPERATION,
   ),
-  index: integer('index').notNull(),
-  type: loan_paid_type('type').default('cash').notNull(),
+  index: integer('index').default(sql`0`),
+  type: loan_paid_type('type').default('cash'),
   amount: PG_DECIMAL('amount').default(sql`0`),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
@@ -139,14 +139,14 @@ export const payment_method = lib.enum('payment_method', [
 
 export const payment = lib.table('payment', {
   uuid: uuid_primary,
-  index: integer('index').notNull(),
+  index: integer('index').default(sql`0`),
   job_uuid: defaultUUID('job_uuid').references(
     () => job.uuid,
     DEFAULT_OPERATION,
   ),
   paid_at: DateTime('paid_at'),
-  method: payment_method('method').default('cash').notNull(),
-  amount: PG_DECIMAL('amount').notNull(),
+  method: payment_method('method').default('cash'),
+  amount: PG_DECIMAL('amount').default(sql`0`),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,
@@ -163,9 +163,9 @@ export const expense = lib.table('expense', {
     DEFAULT_OPERATION,
   ),
   expense_at: DateTime('expense_at'),
-  type: text('type').notNull(),
-  amount: PG_DECIMAL('amount').notNull(),
-  reason: text('reason'),
+  type: text('type').default(sql`null`),
+  amount: PG_DECIMAL('amount').default(sql`0`),
+  reason: text('reason').default(sql`null`),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,
@@ -189,10 +189,10 @@ export const job_entry = lib.table('job_entry', {
     () => vendor.uuid,
     DEFAULT_OPERATION,
   ).default(sql`null`),
-  quantity: PG_DECIMAL('quantity').default(sql`0`).notNull(),
-  buying_unit_price: PG_DECIMAL('buying_unit_price').default(sql`0`).notNull(),
-  selling_unit_price: PG_DECIMAL('selling_unit_price').default(sql`0`).notNull(),
-  warranty_days: integer('warranty_days').default(sql`0`).notNull(),
+  quantity: PG_DECIMAL('quantity').default(sql`0`),
+  buying_unit_price: PG_DECIMAL('buying_unit_price').default(sql`0`),
+  selling_unit_price: PG_DECIMAL('selling_unit_price').default(sql`0`),
+  warranty_days: integer('warranty_days').default(sql`0`),
   purchased_at: DateTime('purchased_at').default(sql`null`),
   is_serial_needed: boolean('is_serial_needed').default(false),
   created_by: defaultUUID('created_by').references(
@@ -210,8 +210,8 @@ export const product_serial = lib.table('product_serial', {
     () => job_entry.uuid,
     DEFAULT_OPERATION,
   ),
-  index: integer('index').notNull(),
-  serial: text('serial').notNull(),
+  index: integer('index').default(sql`0`),
+  serial: text('serial').default (sql`null`),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,

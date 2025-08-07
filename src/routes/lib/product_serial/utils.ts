@@ -23,11 +23,11 @@ export const insertSchema = createInsertSchema(
 ).required({
   uuid: true,
   job_entry_uuid: true,
-  index: true,
-  serial: true,
   created_by: true,
   created_at: true,
 }).partial({
+  index: true,
+  serial: true,
   updated_at: true,
   remarks: true,
 });

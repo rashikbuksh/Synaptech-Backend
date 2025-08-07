@@ -27,12 +27,12 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-  lender_name: true,
-  type: true,
-  amount: true,
   created_by: true,
   created_at: true,
 }).partial({
+  lender_name: true,
+  type: true,
+  amount: true,
   taken_at: true,
   updated_at: true,
   remarks: true,

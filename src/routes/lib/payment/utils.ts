@@ -24,12 +24,12 @@ export const insertSchema = createInsertSchema(
   },
 ).required({
   uuid: true,
-  index: true,
-  amount: true,
   created_by: true,
   created_at: true,
 }).partial({
   job_uuid: true,
+  index: true,
+  amount: true,
   method: true,
   paid_at: true,
   updated_at: true,
