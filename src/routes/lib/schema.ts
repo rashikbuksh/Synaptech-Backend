@@ -102,7 +102,7 @@ export const product = lib.table('product', {
   product_category_uuid: defaultUUID('product_category_uuid').references(
     () => product_category.uuid,
     DEFAULT_OPERATION,
-  ),
+  ).default(sql`null`),
   created_by: defaultUUID('created_by').references(
     () => users.uuid,
     DEFAULT_OPERATION,

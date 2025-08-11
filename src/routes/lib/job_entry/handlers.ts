@@ -4,6 +4,7 @@ import { desc, eq } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
+import nanoid from '@/lib/nanoid';
 import { PG_DECIMAL_TO_FLOAT } from '@/lib/variables';
 import { users } from '@/routes/hr/schema';
 import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
@@ -14,6 +15,42 @@ import { job, job_entry, product, vendor } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
+
+  const {
+    product_uuid,
+    vendor_uuid,
+    created_at,
+    created_by,
+  } = value;
+
+  const existingProduct = await db.select().from(product).where(eq(product.uuid, product_uuid));
+  const existingVendor = await db.select().from(vendor).where(eq(vendor.uuid, vendor_uuid));
+
+  if (existingProduct.length === 0) {
+    const addNewProduct = await db.insert(product).values({
+      uuid: nanoid(),
+      name: product_uuid,
+      created_at,
+      created_by,
+    }).returning({
+      uuid: product.uuid,
+    });
+
+    value.product_uuid = addNewProduct[0].uuid;
+  }
+
+  if (existingVendor.length === 0) {
+    const addNewVendor = await db.insert(vendor).values({
+      uuid: nanoid(),
+      name: vendor_uuid,
+      created_at,
+      created_by,
+    }).returning({
+      uuid: vendor.uuid,
+    });
+
+    value.vendor_uuid = addNewVendor[0].uuid;
+  }
 
   const [data] = await db.insert(job_entry).values(value).returning({
     name: job_entry.uuid,
@@ -28,6 +65,42 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
   if (Object.keys(updates).length === 0)
     return ObjectNotFound(c);
+
+  const {
+    product_uuid,
+    vendor_uuid,
+    created_at,
+    created_by,
+  } = updates;
+
+  const existingProduct = await db.select().from(product).where(eq(product.uuid, product_uuid));
+  const existingVendor = await db.select().from(vendor).where(eq(vendor.uuid, vendor_uuid));
+
+  if (existingProduct.length === 0) {
+    const addNewProduct = await db.insert(product).values({
+      uuid: nanoid(),
+      name: product_uuid,
+      created_at,
+      created_by,
+    }).returning({
+      uuid: product.uuid,
+    });
+
+    updates.product_uuid = addNewProduct[0].uuid;
+  }
+
+  if (existingVendor.length === 0) {
+    const addNewVendor = await db.insert(vendor).values({
+      uuid: nanoid(),
+      name: vendor_uuid,
+      created_at,
+      created_by,
+    }).returning({
+      uuid: vendor.uuid,
+    });
+
+    updates.vendor_uuid = addNewVendor[0].uuid;
+  }
 
   const [data] = await db.update(job_entry)
     .set(updates)
