@@ -23,8 +23,8 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     created_by,
   } = value;
 
-  const existingProduct = await db.select().from(product).where(eq(product.uuid, product_uuid));
-  const existingVendor = await db.select().from(vendor).where(eq(vendor.uuid, vendor_uuid));
+  const existingProduct = await db.select().from(product).where(eq(product.name, product_uuid));
+  const existingVendor = await db.select().from(vendor).where(eq(vendor.name, vendor_uuid));
 
   if (existingProduct.length === 0) {
     const addNewProduct = await db.insert(product).values({
@@ -38,6 +38,9 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
 
     value.product_uuid = addNewProduct[0].uuid;
   }
+  else {
+    value.product_uuid = existingProduct[0].uuid;
+  }
 
   if (existingVendor.length === 0) {
     const addNewVendor = await db.insert(vendor).values({
@@ -50,6 +53,9 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     });
 
     value.vendor_uuid = addNewVendor[0].uuid;
+  }
+  else {
+    value.vendor_uuid = existingVendor[0].uuid;
   }
 
   const [data] = await db.insert(job_entry).values(value).returning({
@@ -73,8 +79,8 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     created_by,
   } = updates;
 
-  const existingProduct = await db.select().from(product).where(eq(product.uuid, product_uuid));
-  const existingVendor = await db.select().from(vendor).where(eq(vendor.uuid, vendor_uuid));
+  const existingProduct = await db.select().from(product).where(eq(product.name, product_uuid));
+  const existingVendor = await db.select().from(vendor).where(eq(vendor.name, vendor_uuid));
 
   if (existingProduct.length === 0) {
     const addNewProduct = await db.insert(product).values({
@@ -88,6 +94,9 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
     updates.product_uuid = addNewProduct[0].uuid;
   }
+  else {
+    updates.product_uuid = existingProduct[0].uuid;
+  }
 
   if (existingVendor.length === 0) {
     const addNewVendor = await db.insert(vendor).values({
@@ -100,6 +109,9 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     });
 
     updates.vendor_uuid = addNewVendor[0].uuid;
+  }
+  else {
+    updates.vendor_uuid = existingVendor[0].uuid;
   }
 
   const [data] = await db.update(job_entry)
