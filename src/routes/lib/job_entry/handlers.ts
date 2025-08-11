@@ -79,10 +79,10 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     updated_at,
   } = updates;
 
-  const existingProduct = await db.select().from(product).where(eq(product.name, product_uuid));
-  const existingVendor = await db.select().from(vendor).where(eq(vendor.name, vendor_uuid));
+  const [existingProduct] = await db.select().from(product).where(eq(product.name, product_uuid));
+  const [existingVendor] = await db.select().from(vendor).where(eq(vendor.name, vendor_uuid));
 
-  if (existingProduct.length === 0) {
+  if (!existingProduct) {
     const addNewProduct = await db.insert(product).values({
       uuid: nanoid(),
       name: product_uuid,
@@ -95,10 +95,10 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     updates.product_uuid = addNewProduct[0].uuid;
   }
   else {
-    updates.product_uuid = existingProduct[0].uuid;
+    updates.product_uuid = existingProduct.uuid;
   }
 
-  if (existingVendor.length === 0) {
+  if (!existingVendor) {
     const addNewVendor = await db.insert(vendor).values({
       uuid: nanoid(),
       name: vendor_uuid,
@@ -111,7 +111,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     updates.vendor_uuid = addNewVendor[0].uuid;
   }
   else {
-    updates.vendor_uuid = existingVendor[0].uuid;
+    updates.vendor_uuid = existingVendor.uuid;
   }
 
   const [data] = await db.update(job_entry)
