@@ -16,6 +16,7 @@ export const insertSchema = createInsertSchema(
     product_uuid: schema => schema.product_uuid,
     vendor_uuid: z.string().optional(),
     created_by: schema => schema.created_by.length(21),
+    updated_by: schema => schema.updated_by.length(21).optional(),
     created_at: schema => schema.created_at.regex(dateTimePattern, {
       message: 'created_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
@@ -42,6 +43,7 @@ export const insertSchema = createInsertSchema(
   warranty_days: true,
   purchased_at: true,
   is_serial_needed: true,
+  updated_by: true,
   updated_at: true,
   remarks: true,
 });

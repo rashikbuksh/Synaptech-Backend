@@ -75,7 +75,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   const {
     product_uuid,
     vendor_uuid,
-    created_by,
+    updated_by,
     updated_at,
   } = updates;
 
@@ -87,7 +87,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
       uuid: nanoid(),
       name: product_uuid,
       created_at: updated_at,
-      created_by,
+      created_by: updated_by,
     }).returning({
       uuid: product.uuid,
     });
@@ -103,7 +103,7 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
       uuid: nanoid(),
       name: vendor_uuid,
       created_at: updated_at,
-      created_by,
+      created_by: updated_by,
     }).returning({
       uuid: vendor.uuid,
     });

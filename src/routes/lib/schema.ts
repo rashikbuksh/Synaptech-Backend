@@ -199,6 +199,10 @@ export const job_entry = lib.table('job_entry', {
     () => users.uuid,
     DEFAULT_OPERATION,
   ),
+  updated_by: defaultUUID('updated_by').references(
+    () => users.uuid,
+    DEFAULT_OPERATION,
+  ).default(sql`null`),
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
