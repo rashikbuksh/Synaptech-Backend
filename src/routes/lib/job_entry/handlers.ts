@@ -1,6 +1,6 @@
 import type { AppRouteHandler } from '@/lib/types';
 
-import { desc, eq } from 'drizzle-orm';
+import { desc, eq, or } from 'drizzle-orm';
 import * as HSCode from 'stoker/http-status-codes';
 
 import db from '@/db';
@@ -23,10 +23,10 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     created_by,
   } = value;
 
-  const existingProduct = await db.select().from(product).where(eq(product.name, product_uuid));
-  const existingVendor = await db.select().from(vendor).where(eq(vendor.name, vendor_uuid));
+  const [existingProduct] = await db.select().from(product).where(or(eq(product.name, product_uuid), eq(product.uuid, product_uuid))).limit(1);
+  const [existingVendor] = await db.select().from(vendor).where(or(eq(vendor.name, vendor_uuid), eq(vendor.uuid, vendor_uuid))).limit(1);
 
-  if (existingProduct.length === 0) {
+  if (!existingProduct) {
     const addNewProduct = await db.insert(product).values({
       uuid: nanoid(),
       name: product_uuid,
@@ -39,10 +39,10 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     value.product_uuid = addNewProduct[0].uuid;
   }
   else {
-    value.product_uuid = existingProduct[0].uuid;
+    value.product_uuid = existingProduct.uuid;
   }
 
-  if (existingVendor.length === 0) {
+  if (!existingVendor) {
     const addNewVendor = await db.insert(vendor).values({
       uuid: nanoid(),
       name: vendor_uuid,
@@ -55,7 +55,7 @@ export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
     value.vendor_uuid = addNewVendor[0].uuid;
   }
   else {
-    value.vendor_uuid = existingVendor[0].uuid;
+    value.vendor_uuid = existingVendor.uuid;
   }
 
   const [data] = await db.insert(job_entry).values(value).returning({
@@ -79,8 +79,8 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
     updated_at,
   } = updates;
 
-  const [existingProduct] = await db.select().from(product).where(eq(product.name, product_uuid));
-  const [existingVendor] = await db.select().from(vendor).where(eq(vendor.name, vendor_uuid));
+  const [existingProduct] = await db.select().from(product).where(or(eq(product.name, product_uuid), eq(product.uuid, product_uuid))).limit(1);
+  const [existingVendor] = await db.select().from(vendor).where(or(eq(vendor.name, vendor_uuid), eq(vendor.uuid, vendor_uuid))).limit(1);
 
   if (!existingProduct) {
     const addNewProduct = await db.insert(product).values({
