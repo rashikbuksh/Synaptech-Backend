@@ -9,7 +9,7 @@ import { createToast, DataNotFound, ObjectNotFound } from '@/utils/return';
 
 import type { CreateRoute, GetOneRoute, ListRoute, PatchRoute, RemoveRoute } from './routes';
 
-import { client, job } from '../schema';
+import { client, job, job_entry } from '../schema';
 
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
@@ -43,6 +43,12 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
 
 export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
   const { uuid } = c.req.valid('param');
+
+  const _data2 = await db.delete(job_entry)
+    .where(eq(job_entry.job_uuid, uuid))
+    .returning({
+      name: job_entry.uuid,
+    });
 
   const [data] = await db.delete(job)
     .where(eq(job.uuid, uuid))
