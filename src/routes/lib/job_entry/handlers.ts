@@ -16,47 +16,47 @@ import { job, job_entry, product, vendor } from '../schema';
 export const create: AppRouteHandler<CreateRoute> = async (c: any) => {
   const value = c.req.valid('json');
 
-  const {
-    product_uuid,
-    vendor_uuid,
-    created_at,
-    created_by,
-  } = value;
+  // const {
+  //   product_uuid,
+  //   vendor_uuid,
+  //   created_at,
+  //   created_by,
+  // } = value;
 
-  const [existingProduct] = await db.select().from(product).where(or(eq(product.name, product_uuid), eq(product.uuid, product_uuid))).limit(1);
-  const [existingVendor] = vendor_uuid ? await db.select().from(vendor).where(or(eq(vendor.name, vendor_uuid), eq(vendor.uuid, vendor_uuid))).limit(1) : [null];
+  // const [existingProduct] = await db.select().from(product).where(or(eq(product.name, product_uuid), eq(product.uuid, product_uuid))).limit(1);
+  // const [existingVendor] = vendor_uuid ? await db.select().from(vendor).where(or(eq(vendor.name, vendor_uuid), eq(vendor.uuid, vendor_uuid))).limit(1) : [null];
 
-  if (!existingProduct) {
-    const addNewProduct = await db.insert(product).values({
-      uuid: nanoid(),
-      name: product_uuid,
-      created_at,
-      created_by,
-    }).returning({
-      uuid: product.uuid,
-    });
+  // if (!existingProduct) {
+  //   const addNewProduct = await db.insert(product).values({
+  //     uuid: nanoid(),
+  //     name: product_uuid,
+  //     created_at,
+  //     created_by,
+  //   }).returning({
+  //     uuid: product.uuid,
+  //   });
 
-    value.product_uuid = addNewProduct[0].uuid;
-  }
-  else {
-    value.product_uuid = existingProduct.uuid;
-  }
+  //   value.product_uuid = addNewProduct[0].uuid;
+  // }
+  // else {
+  //   value.product_uuid = existingProduct.uuid;
+  // }
 
-  if (!existingVendor && vendor_uuid) {
-    const addNewVendor = await db.insert(vendor).values({
-      uuid: nanoid(),
-      name: vendor_uuid,
-      created_at,
-      created_by,
-    }).returning({
-      uuid: vendor.uuid,
-    });
+  // if (!existingVendor && vendor_uuid) {
+  //   const addNewVendor = await db.insert(vendor).values({
+  //     uuid: nanoid(),
+  //     name: vendor_uuid,
+  //     created_at,
+  //     created_by,
+  //   }).returning({
+  //     uuid: vendor.uuid,
+  //   });
 
-    value.vendor_uuid = addNewVendor[0].uuid;
-  }
-  else {
-    value.vendor_uuid = existingVendor ? existingVendor.uuid : null;
-  }
+  //   value.vendor_uuid = addNewVendor[0].uuid;
+  // }
+  // else {
+  //   value.vendor_uuid = existingVendor ? existingVendor.uuid : null;
+  // }
 
   const [data] = await db.insert(job_entry).values(value).returning({
     name: job_entry.uuid,
@@ -72,47 +72,47 @@ export const patch: AppRouteHandler<PatchRoute> = async (c: any) => {
   if (Object.keys(updates).length === 0)
     return ObjectNotFound(c);
 
-  const {
-    product_uuid,
-    vendor_uuid,
-    updated_by,
-    updated_at,
-  } = updates;
+  // const {
+  //   product_uuid,
+  //   vendor_uuid,
+  //   updated_by,
+  //   updated_at,
+  // } = updates;
 
-  const [existingProduct] = await db.select().from(product).where(or(eq(product.name, product_uuid), eq(product.uuid, product_uuid))).limit(1);
-  const [existingVendor] = vendor_uuid ? await db.select().from(vendor).where(or(eq(vendor.name, vendor_uuid), eq(vendor.uuid, vendor_uuid))).limit(1) : [null];
+  // const [existingProduct] = await db.select().from(product).where(or(eq(product.name, product_uuid), eq(product.uuid, product_uuid))).limit(1);
+  // const [existingVendor] = vendor_uuid ? await db.select().from(vendor).where(or(eq(vendor.name, vendor_uuid), eq(vendor.uuid, vendor_uuid))).limit(1) : [null];
 
-  if (!existingProduct) {
-    const addNewProduct = await db.insert(product).values({
-      uuid: nanoid(),
-      name: product_uuid,
-      created_at: updated_at,
-      created_by: updated_by,
-    }).returning({
-      uuid: product.uuid,
-    });
+  // if (!existingProduct) {
+  //   const addNewProduct = await db.insert(product).values({
+  //     uuid: nanoid(),
+  //     name: product_uuid,
+  //     created_at: updated_at,
+  //     created_by: updated_by,
+  //   }).returning({
+  //     uuid: product.uuid,
+  //   });
 
-    updates.product_uuid = addNewProduct[0].uuid;
-  }
-  else {
-    updates.product_uuid = existingProduct.uuid;
-  }
+  //   updates.product_uuid = addNewProduct[0].uuid;
+  // }
+  // else {
+  //   updates.product_uuid = existingProduct.uuid;
+  // }
 
-  if (!existingVendor && vendor_uuid) {
-    const addNewVendor = await db.insert(vendor).values({
-      uuid: nanoid(),
-      name: vendor_uuid,
-      created_at: updated_at,
-      created_by: updated_by,
-    }).returning({
-      uuid: vendor.uuid,
-    });
+  // if (!existingVendor && vendor_uuid) {
+  //   const addNewVendor = await db.insert(vendor).values({
+  //     uuid: nanoid(),
+  //     name: vendor_uuid,
+  //     created_at: updated_at,
+  //     created_by: updated_by,
+  //   }).returning({
+  //     uuid: vendor.uuid,
+  //   });
 
-    updates.vendor_uuid = addNewVendor[0].uuid;
-  }
-  else {
-    updates.vendor_uuid = existingVendor ? existingVendor.uuid : null;
-  }
+  //   updates.vendor_uuid = addNewVendor[0].uuid;
+  // }
+  // else {
+  //   updates.vendor_uuid = existingVendor ? existingVendor.uuid : null;
+  // }
 
   const [data] = await db.update(job_entry)
     .set(updates)
