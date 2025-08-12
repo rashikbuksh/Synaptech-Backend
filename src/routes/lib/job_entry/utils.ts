@@ -30,6 +30,7 @@ export const insertSchema = createInsertSchema(
     is_serial_needed: z.boolean().default(false).optional(),
   },
 ).required({
+  index: true,
   uuid: true,
   job_uuid: true,
   product_uuid: true,

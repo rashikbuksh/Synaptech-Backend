@@ -162,6 +162,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     created_at: job_entry.created_at,
     updated_at: job_entry.updated_at,
     remarks: job_entry.remarks,
+    index: job_entry.index,
   })
     .from(job_entry)
     .leftJoin(job, eq(job_entry.job_uuid, job.uuid))
@@ -197,6 +198,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_at: job_entry.created_at,
     updated_at: job_entry.updated_at,
     remarks: job_entry.remarks,
+    index: job_entry.index,
   })
     .from(job_entry)
     .leftJoin(job, eq(job_entry.job_uuid, job.uuid))

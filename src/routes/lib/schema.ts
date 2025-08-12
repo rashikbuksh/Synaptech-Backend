@@ -206,6 +206,7 @@ export const job_entry = lib.table('job_entry', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  index: integer('index').default(sql`0`),
 });
 
 export const product_serial = lib.table('product_serial', {
