@@ -81,6 +81,9 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     total_payment: sql`COALESCE(payment_total.total_payment, 0)::float8`.as('total_payment'),
     total_balance: sql`COALESCE(job_entry_total.total_selling_price, 0)::float8 - COALESCE(payment_total.total_payment, 0)::float8`.as('total_balance'),
     payment_methods: sql`COALESCE(payment_total.payment_methods, '')`.as('payment_methods'),
+    remarks: job.remarks,
+    to_date: job.to_date,
+    subject: job.subject,
   })
     .from(job)
     .leftJoin(users, eq(job.created_by, users.uuid))
@@ -132,6 +135,9 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
     created_by_name: users.name,
     created_at: job.created_at,
     updated_at: job.updated_at,
+    remarks: job.remarks,
+    to_date: job.to_date,
+    subject: job.subject,
     job_entry: sql`
       COALESCE(ARRAY(
         SELECT jsonb_build_object(

@@ -81,6 +81,8 @@ export const job = lib.table('job', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  to_date: DateTime('to_date').default(sql`null`),
+  subject: text('subject').default(sql`null`),
 });
 
 export const product_category = lib.table('product_category', {
