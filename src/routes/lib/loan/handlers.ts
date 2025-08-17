@@ -78,7 +78,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     .from(loan)
     .leftJoin(users, eq(loan.created_by, users.uuid))
     .where(
-      is_completed === 'true' ? eq(loan.is_completed, true) : sql`true`,
+      is_completed === 'completed' ? eq(loan.is_completed, true) : is_completed === 'pending' ? eq(loan.is_completed, false) : sql`true`,
     )
     .orderBy(desc(loan.created_at));
 
