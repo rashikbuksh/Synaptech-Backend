@@ -24,6 +24,7 @@ export const loan = lib.table('loan', {
   created_at: DateTime('created_at').notNull(),
   updated_at: DateTime('updated_at'),
   remarks: text('remarks'),
+  is_completed: boolean('is_completed').default(false),
 });
 
 // * loan paid

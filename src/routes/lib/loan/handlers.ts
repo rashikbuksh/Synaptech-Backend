@@ -58,6 +58,8 @@ export const remove: AppRouteHandler<RemoveRoute> = async (c: any) => {
 };
 
 export const list: AppRouteHandler<ListRoute> = async (c: any) => {
+  const { is_completed } = c.req.valid('query');
+
   const resultPromise = db.select({
     uuid: loan.uuid,
     lender_name: loan.lender_name,
@@ -71,10 +73,13 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     remarks: loan.remarks,
     total_paid_amount: sql`
           COALESCE((SELECT SUM(loan_paid.amount)::float8 FROM lib.loan_paid WHERE loan_paid.loan_uuid = ${loan.uuid}), 0)`.as('total_amount'),
-
+    is_completed: loan.is_completed,
   })
     .from(loan)
     .leftJoin(users, eq(loan.created_by, users.uuid))
+    .where(
+      is_completed === 'true' ? eq(loan.is_completed, true) : sql`true`,
+    )
     .orderBy(desc(loan.created_at));
 
   const data = await resultPromise;
@@ -115,7 +120,7 @@ export const getOne: AppRouteHandler<GetOneRoute> = async (c: any) => {
             WHERE loan_paid.loan_uuid = ${loan.uuid}
             ORDER BY loan_paid.index ASC
           ),  ARRAY[]::jsonb[])`.as('loan_paid'),
-
+    is_completed: loan.is_completed,
   })
     .from(loan)
     .leftJoin(users, eq(loan.created_by, users.uuid))

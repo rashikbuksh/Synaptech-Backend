@@ -24,6 +24,7 @@ export const insertSchema = createInsertSchema(
       message: 'updated_at must be in the format "YYYY-MM-DD HH:MM:SS"',
     }),
     amount: z.number().positive(),
+    is_completed: schema => schema.is_completed.optional().default(false),
   },
 ).required({
   uuid: true,
@@ -36,6 +37,7 @@ export const insertSchema = createInsertSchema(
   taken_at: true,
   updated_at: true,
   remarks: true,
+  is_completed: true,
 });
 
 export const patchSchema = insertSchema.partial();
