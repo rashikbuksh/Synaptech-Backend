@@ -79,6 +79,7 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
     total_buying_price: sql`COALESCE(job_entry_total.total_buying_price, 0)::float8`.as('total_buying_price'),
     total_selling_price: sql`COALESCE(job_entry_total.total_selling_price, 0)::float8`.as('total_selling_price'),
     total_payment: sql`COALESCE(payment_total.total_payment, 0)::float8`.as('total_payment'),
+    total_expense: sql`COALESCE(expense_total.total_amount, 0)::float8`.as('total_expense'),
     total_balance: sql`COALESCE(job_entry_total.total_selling_price, 0)::float8 - COALESCE(payment_total.total_payment, 0)::float8`.as('total_balance'),
     payment_methods: sql`COALESCE(payment_total.payment_methods, '')`.as('payment_methods'),
     remarks: job.remarks,
@@ -113,6 +114,15 @@ export const list: AppRouteHandler<ListRoute> = async (c: any) => {
         GROUP BY payment.job_uuid
       ) as payment_total`,
       eq(job.uuid, sql`payment_total.job_uuid`),
+    )
+    .leftJoin(
+      sql`
+      (
+        SELECT SUM(amount) AS total_amount, job_uuid
+        FROM lib.expense
+        GROUP BY job_uuid
+      ) as expense_total`,
+      eq(job.uuid, sql`expense_total.job_uuid`),
     )
     .orderBy(desc(job.created_at));
 
