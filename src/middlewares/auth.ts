@@ -55,4 +55,5 @@ export const ALLOWED_ROUTES: string[] = [
   'https://synaptech.cloud',
   'https://www.synaptech.cloud',
   'https://admin.synaptech.cloud',
+  'https://synap-erp-starter.vercel.app',
 ];
