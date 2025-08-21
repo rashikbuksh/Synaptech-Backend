@@ -216,6 +216,38 @@ export const signin = createRoute({
     ),
   },
 });
+
+export const login = createRoute({
+  path: '/hr/user/login',
+  method: 'post',
+  request: {
+    body: jsonContentRequired(
+      signinSchema,
+      'The user login',
+    ),
+  },
+  tags,
+  responses: {
+    [HSCode.OK]: jsonContent(
+      signinOutputSchema,
+      'The logged user',
+    ),
+    [HSCode.NOT_FOUND]: jsonContent(
+      notFoundSchema,
+      'User not found',
+    ),
+    [HSCode.UNPROCESSABLE_ENTITY]: jsonContent(
+      createErrorSchema(patchSchema)
+        .or(createErrorSchema(param.uuid)),
+      'The validation error(s)',
+    ),
+    [HSCode.UNAUTHORIZED]: jsonContent(
+      unauthorizedSchema,
+      'Wrong password',
+    ),
+  },
+});
+
 export const patchChangePassword = createRoute({
   path: '/hr/users/password/{uuid}',
   method: 'patch',
@@ -250,3 +282,4 @@ export type GetCanAccessRoute = typeof getCanAccess;
 export type PatchCanAccessRoute = typeof patchCanAccess;
 export type PatchStatusRoute = typeof patchStatus;
 export type PatchChangePasswordRoute = typeof patchChangePassword;
+export type LoginRoute = typeof login;

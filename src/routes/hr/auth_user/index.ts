@@ -13,6 +13,7 @@ const router = createRouter()
   .openapi(routes.getCanAccess, handlers.getCanAccess)
   .openapi(routes.patchCanAccess, handlers.patchCanAccess)
   .openapi(routes.patchStatus, handlers.patchStatus)
-  .openapi(routes.patchChangePassword, handlers.patchChangePassword);
+  .openapi(routes.patchChangePassword, handlers.patchChangePassword)
+  .openapi(routes.login, handlers.signin);
 
 export default router;
