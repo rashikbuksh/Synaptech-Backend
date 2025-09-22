@@ -46,7 +46,7 @@ export function isPublicRoute(url: string, method: string) {
 
 export const ALLOWED_ROUTES: string[] = [
   'http://localhost:3005',
-  'http://localhost:3000',
+  'http://192.168.10.1750',
   'http://192.168.10.58:4090',
   'http://103.147.163.46:4090',
   'http://151.106.120.131',
