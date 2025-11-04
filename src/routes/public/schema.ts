@@ -9,6 +9,7 @@ export const contact_us = pgTable('contact_us', {
   email: text('email'),
   phone: text('phone'),
   message: text('message'),
+  url: text('url'),
   created_at: DateTime('created_at').notNull(),
 });
 

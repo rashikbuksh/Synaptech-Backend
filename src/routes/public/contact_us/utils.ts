@@ -24,6 +24,7 @@ export const insertSchema = createInsertSchema(
   email: true,
   phone: true,
   message: true,
+  url: true,
 }).omit({
   id: true,
 });
